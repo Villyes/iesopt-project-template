@@ -20,6 +20,16 @@ uvx cookiecutter gh:ait-energy/iesopt-project-template
 
 and answer the questions in the terminal. For example, if you execute the command in `C:\Users\username\dev`, the new project will automatically be created in `C:\Users\username\dev\your_project_name`.
 
+## Improving this template
+
+Run 
+
+```bash
+uvx cookiecutter -f iesopt-project-template
+```
+
+inside the folder where you cloned this template. So if this is in `C:\Users\username\dev\iesopt-project-template`, execute the command in `C:\Users\username\dev`. Then open the created folder and inspect or test the results there. Using the `-f` option ensures that `cookiecutter` overwrites an already existing folder, which is what you (most likely) want while iteratively updating something.
+
 ## Explanations & Problems
 
 #### Why does it ask for my name / an author?
