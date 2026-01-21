@@ -5,7 +5,7 @@
   "short_description": "",
   "iesopt_version": "latest",
   "default_config": "minimal",
-  "add_templates": ["none", "all", "heat"],
+  "add_templates": ["none", "all"],
   "add_addons": ["none", "all"],
   "__prompts__": {
     "project_name": "Select project name",
