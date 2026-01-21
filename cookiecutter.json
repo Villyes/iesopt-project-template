@@ -6,6 +6,7 @@
   "iesopt_version": "latest",
   "default_config": "minimal",
   "add_templates": ["none", "all", "heat"],
+  "add_addons": ["none", "all"],
   "__prompts__": {
     "project_name": "Select project name",
     "project_slug": "Select project slug",
@@ -13,6 +14,7 @@
     "short_description": "Enter a short project description",
     "iesopt_version": "Select IESopt version",
     "default_config": "Generate a `config.iesopt.yaml` file; options: no/minimal/full or name of example (e.g., 01_basic_single_node)",
-    "add_templates": "Add IESopt templates to the project"
+    "add_templates": "Add IESopt templates to the project",
+    "add_addons": "Add IESopt addons to the project"
   }
 }
