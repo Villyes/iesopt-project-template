@@ -1,10 +1,10 @@
 module IESoptAddon_FLH
 
-# Addon implementing the constraint of minimum full load hours of a ranged profile or a unit with capacity specified as out:heat (unit.exp.out_heat available).
+# Constraint of minimum full load hours of a ranged profile or a unit with capacity specified as out:heat (unit.exp.out_heat available).
 
 # Necessary
 # - loading the addon in the config 
-#       addons: {FullLoadHours_Profile: {}}
+#       addons: {FullLoadHours: {}}
 # - giving the target the tag "FLH" in the config 
 #       name: {tags: FLH}
 # - giving the target the value for minimum full load hours in the config 
