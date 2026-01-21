@@ -11,7 +11,7 @@ module IESoptAddon_FLH
 #       name: {config: {full_load_hours: 7000}}
 
 # Tips
-# - check out example 18_addons_iesopt.yaml for the use of addons and variables for addons
+# - check out example 18_addons.iesopt.yaml for the use of addons and variables for addons
 
 
 using IESopt
