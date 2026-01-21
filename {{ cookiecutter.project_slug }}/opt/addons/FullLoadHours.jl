@@ -10,6 +10,9 @@ module IESoptAddon_FLH
 # - giving the target the value for minimum full load hours in the config 
 #       name: {config: {full_load_hours: 7000}}
 
+# Tips
+# - check out example 18_addons_iesopt.yaml for the use of addons and variables for addons
+
 
 using IESopt
 import JuMP
