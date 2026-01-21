@@ -63,6 +63,8 @@ This can be used to push your local contents, e.g., to an internal/private GitLa
 
 The template contains various `.gitkeep` files, which are used to keep empty directories in the repository. These files are not necessary for the project and can be removed if desired.
 
+# Available code
+
 ## List of available addons
 - FullLoadHours (minimum full load hours)
 - XOR (exclusive operation of components)
