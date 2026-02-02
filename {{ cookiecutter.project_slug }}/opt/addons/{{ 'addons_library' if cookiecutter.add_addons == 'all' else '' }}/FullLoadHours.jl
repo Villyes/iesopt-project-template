@@ -1,6 +1,6 @@
 module IESoptAddon_FLH
 
-# Constraint of minimum full load hours of a ranged profile or a unit with capacity specified as out:heat (unit.exp.out_heat available).
+# Constraint of minimum full load hours of a ranged profile or a unit, depending on whatever inout and carrier is defined.
 
 # Necessary
 # - loading the addon in the config 
@@ -43,12 +43,20 @@ function enforce_full_load_hours(asset::Profile)
 end
 
 function enforce_full_load_hours(asset::Unit)
-    p_max = maximum(access(asset.capacity))
-    flh = asset.config["full_load_hours"]
+    if IESopt._isfixed(asset.capacity)
+        p_max = access(asset.capacity)
+        flh = asset.config["full_load_hours"]
+        acc = asset.capacity_carrier
+        load = getproperty(asset.exp, Symbol("$(acc.inout)_$(acc.carrier.name)"))
 
-    JuMP.@constraint(asset.model, sum(asset.exp.out_heat) >= p_max * flh)
+        JuMP.@constraint(asset.model, sum(load) >= p_max * flh)
 
-    return true
+        return true
+
+    else
+        @error "FLH not possible for decision variables"
+        return false
+    end
 end
 
 end
