@@ -5,8 +5,9 @@ module IESoptAddon_XOR
 # Necessary
 # - loading the addon in the config 
 #       addons: {XOR: {bigM: 1}} }
-# - specifying the components in the addon
-#       lines 50 & 51
+# - setting the parameter bigM to "the shared capacity"
+# - specifying the components in this addon
+#       lines 51 & 52
 # - decision: switching to MILP or staying at LP
 
 # Comments
