@@ -1,5 +1,7 @@
 import subprocess
-import os
+#import os
+import shutil
+from pathlib import Path
 
 if __name__ == "__main__":
     iesopt_version = "{{ cookiecutter.iesopt_version }}"
@@ -31,6 +33,8 @@ if __name__ == "__main__":
     # remove files
     #if "{{ cookiecutter.add_addons }}" != "EC-only":
     #os.remove("_delete_me_.txt")
+    if "{{ cookiecutter.add_addons }}" != "all":
+        shutil.rmtree("addons_library", ignore_errors=True)
     # print
     print("")
     print("IESopt project template setup complete for {{ cookiecutter.project_name }}!")
