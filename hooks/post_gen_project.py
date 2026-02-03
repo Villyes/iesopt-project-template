@@ -1,4 +1,5 @@
 import subprocess
+import os
 
 if __name__ == "__main__":
     iesopt_version = "{{ cookiecutter.iesopt_version }}"
@@ -27,6 +28,10 @@ if __name__ == "__main__":
             "--quiet",
         ]
     )
+    # remove files
+    #if "{{ cookiecutter.add_addons }}" != "EC-only":
+    os.remove("_delete_me_.txt")
+    # print
     print("")
     print("IESopt project template setup complete for {{ cookiecutter.project_name }}!")
     print("")
