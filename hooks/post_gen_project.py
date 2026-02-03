@@ -34,7 +34,7 @@ if __name__ == "__main__":
     #if "{{ cookiecutter.add_addons }}" != "EC-only":
     #os.remove("_delete_me_.txt")
     if "{{ cookiecutter.add_addons }}" != "all":
-        shutil.rmtree("addons_library", ignore_errors=True)
+        shutil.rmtree("library_addons", ignore_errors=True)
     # print
     print("")
     print("IESopt project template setup complete for {{ cookiecutter.project_name }}!")
