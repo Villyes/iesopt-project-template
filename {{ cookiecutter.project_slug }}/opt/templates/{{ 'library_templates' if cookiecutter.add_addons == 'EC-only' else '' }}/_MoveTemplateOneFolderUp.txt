@@ -1,0 +1,1 @@
+To use the template, move them one folder up, directly into "templates".

@@ -1,0 +1,210 @@
+parameters: 
+  connected_to_ec_grid: null
+  COP_airsource: 0
+  heat_node_external: null
+  el_demand: 0
+  pv_generation: 0.0
+  heat_demand: 0
+  cool_demand: 0
+  dhw_demand: 0
+  capacity_heat_storage: 0
+  capacity_cool_storage: 0
+  capacity_dhw_storage: 0
+  capacity_freecooling: 0
+  heatpump_capacity_el: 0
+  heatpump_dhw_capacity_el: 0
+  heat_demand_test: 0
+
+# ------------------------------------------------------------------------------------------------------------------ #
+components:
+# ---------- [ELECTRICITY] Point of delivery ----------
+  pod:
+    type: Node
+    carrier: electricity
+
+# ---------- [ELECTRICITY] Input consumption and generation profiles ----------
+
+  el_demand:
+    type: Profile
+    carrier: electricity
+    node_from: <self>.pod
+    value: <el_demand>
+
+  pv:
+    type: Profile
+    carrier: electricity
+    node_to: <self>.pod
+    value: <pv_generation>
+
+# ---------- [ELECTRICITY] Connection with the grid for the energy community ----------
+
+  from_ec:
+    disabled: not <sectorcoupling_on>
+    type: Connection
+    lb: 0
+    node_from: <connected_to_ec_grid>
+    node_to: <self>.pod
+    cost: <buy_price_ec> + <grid_charges_buy_ec>
+
+  to_ec:
+    disabled: not <sectorcoupling_on>
+    type: Connection
+    lb: 0
+    node_from: <self>.pod
+    node_to: <connected_to_ec_grid>
+    cost: <sell_price_ec> + <grid_charges_sell_ec>
+
+# ---------- [ELECTRICITY] Residual import and export ----------
+
+  import:
+    type: Profile
+    carrier: electricity
+    node_to: <self>.pod
+    mode: create
+    cost: <buy_price_supplier> + <grid_charges_buy_conventional>
+
+  export:
+    type: Profile
+    carrier: electricity
+    node_from: <self>.pod
+    mode: destroy
+    cost: <sell_price_supplier> + <grid_charges_sell_conventional>
+
+################################################
+# ---------- [HEAT] Nodes = storages ----------
+  heat_storage:
+    type: Node
+    carrier: heat
+    has_state: true
+    state_lb: 0
+    state_ub: <capacity_heat_storage>
+
+  cool_storage:
+    type: Node
+    carrier: heat
+    has_state: true
+    state_lb: 0
+    state_ub: <capacity_cool_storage>
+
+  dhw_storage:
+    type: Node
+    carrier: heat
+    has_state: true
+    state_lb: 0
+    state_ub: <capacity_dhw_storage>
+
+# ---------- [HEAT] Flexibility ----------
+  heat_flex_building:
+    type: Node
+    carrier: heat
+    has_state: true
+    state_lb: 0
+    state_ub: (<T_max>-<T_min>)*<heating_power>
+
+  charge_flex_building:
+    disabled: not <building_flexibility_on>
+    type: Unit
+    conversion: 1 heat -> 1 heat
+    inputs: {heat: <self>.heat_storage}
+    outputs: {heat: <self>.heat_flex_building}
+    capacity: 2*<heating_power> in:heat
+    
+  discharge_flex_building:
+    disabled: not <building_flexibility_on>
+    type: Unit
+    conversion: 1 heat -> 1 heat
+    inputs: {heat: <self>.heat_flex_building}
+    outputs: {heat: <self>.heat_storage}
+    capacity: 2*<heating_power> in:heat
+
+# ---------- [HEAT] Demands ----------
+
+  heat_demand:
+    type: Profile
+    carrier: heat
+    node_from: <self>.heat_storage
+    value: <heat_demand>
+
+  cool_demand:
+    type: Profile
+    carrier: heat
+    node_to: <self>.cool_storage
+    value: <cool_demand>
+    
+  dhw_demand:
+    type: Profile
+    carrier: heat
+    node_from: <self>.dhw_storage
+    value: <dhw_demand>
+
+
+# ---------- [HEAT] Heatpumps and connections to grid ----------
+  heatpump_heat:
+    enabled: <anergynetwork>
+    type: Unit
+    inputs: {electricity: <self>.pod, heat: <heat_node_external>}
+    outputs: {heat: <self>.heat_storage}
+    conversion: 1 electricity + (<cop_heat>-1) heat -> <cop_heat> heat
+    capacity: <heatpump_capacity_el> in:electricity
+
+  heatpump_dhw:
+    enabled: <anergynetwork>
+    type: Unit
+    inputs: {electricity: <self>.pod, heat: <heat_node_external>}
+    outputs: {heat: <self>.dhw_storage}
+    conversion: 1 electricity + (<cop_dhw>-1) heat -> <cop_dhw> heat
+    capacity: <heatpump_capacity_el> in:electricity    
+
+  heatpump_cooling_mode:
+    enabled: (<anergynetwork> && !<freecooling>)
+    type: Unit
+    inputs: {electricity: <self>.pod, heat: <self>.cool_storage}
+    outputs: {heat: <heat_node_external>}
+    conversion: 1 electricity + (<cop_cool>-1) heat -> <cop_cool> heat
+    capacity: <heatpump_capacity_el> in:electricity
+
+  freecooling:
+    enabled: <freecooling>
+    type: Unit
+    inputs: {heat: <self>.cool_storage}
+    outputs: {heat: <heat_node_external>}
+    conversion: 1 heat -> 1 heat
+    capacity: <capacity_freecooling> in:heat
+
+  # ---------- [HEAT] Air-source heatpumps ----------
+
+  heatpump_as_heat:
+    enabled: <airsource_heatpumps>
+    type: Unit
+    inputs: {electricity: <self>.pod}
+    outputs: {heat: <self>.heat_storage}
+    conversion: 1 electricity -> <cop_as> heat
+    capacity: <heatpump_capacity_el> in:electricity
+
+  heatpump_as_dhw:
+    enabled: <airsource_heatpumps>
+    type: Unit
+    inputs: {electricity: <self>.pod}
+    outputs: {heat: <self>.dhw_storage}
+    conversion: 1 electricity -> <cop_as> heat
+    capacity: <heatpump_dhw_capacity_el> in:electricity   
+
+  heatpump_as_cooling_mode:
+    enabled: <airsource_heatpumps>
+    type: Unit
+    inputs: {electricity: <self>.pod, heat: <self>.cool_storage}
+    outputs: {heat: <self>.node_as_cooling}
+    conversion: 1 electricity + (<cop_cool>-1) heat -> <cop_cool> heat
+    capacity: <heatpump_capacity_el> in:electricity 
+
+  node_as_cooling:
+    enabled: <airsource_heatpumps>
+    type: Node
+    carrier: heat
+
+  destroy_as_cooling:
+    enabled: <airsource_heatpumps>
+    type: Profile
+    mode: destroy
+    carrier: heat
+    node_from: <self>.node_as_cooling
