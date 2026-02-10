@@ -10,6 +10,7 @@ module IESoptAddon_XOR
 # - decision: switching to MILP or staying at LP
 
 # Comments
+# For each tag provided, an XOR constraint will be created which applies to all components with that tag.
 # LP: the components share 100% of operation in one timestep (variable is 0-1), an interpretation of 25% and 75% capacity over one timestep is: 15min and 45min full load operation of the components.
 # MILP: the constraint is enforced fully for one timestep (variable is a bool, 0 or 1)
 
