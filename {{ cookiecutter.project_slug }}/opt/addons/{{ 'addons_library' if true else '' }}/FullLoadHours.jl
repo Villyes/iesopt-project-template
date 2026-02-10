@@ -33,23 +33,29 @@ function construct_constraints!(model::JuMP.Model, config::Dict)
     return true
 end
 
-function enforce_full_load_hours(asset::Profile)
+function enforce_full_load_hours(model::JuMP.Model, asset::Profile)
     p_max = maximum(access(asset.ub))
     flh = asset.config["full_load_hours"]
 
-    JuMP.@constraint(asset.model, sum(asset.exp.value) >= p_max * flh)
+    T = get_T(model)
+    snapshots = internal(model).model.snapshots
+
+    JuMP.@constraint(asset.model,sum(asset.exp.value[t].*snapshots[t].weight for t in T) >= p_max * flh)
 
     return true
 end
 
-function enforce_full_load_hours(asset::Unit)
+function enforce_full_load_hours(model::JuMP.Model, asset::Unit)
     if IESopt._isfixed(asset.capacity)
         p_max = access(asset.capacity)
         flh = asset.config["full_load_hours"]
         acc = asset.capacity_carrier
         load = getproperty(asset.exp, Symbol("$(acc.inout)_$(acc.carrier.name)"))
 
-        JuMP.@constraint(asset.model, sum(load) >= p_max * flh)
+        T = get_T(model)
+        snapshots = internal(model).model.snapshots
+
+        JuMP.@constraint(asset.model, sum(load[t].*snapshots[t].weight for t in T) >= p_max * flh)
 
         return true
 
