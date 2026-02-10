@@ -25,7 +25,7 @@ function construct_constraints!(model::JuMP.Model, config::Dict)
     assets = get_components(model; tagged="FLH")
 
     for asset in assets
-        if !enforce_full_load_hours(asset)
+        if !enforce_full_load_hours(model, asset)
             return false
         end
     end
