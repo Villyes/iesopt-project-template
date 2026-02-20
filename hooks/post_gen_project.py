@@ -15,7 +15,7 @@ if __name__ == "__main__":
     )
     # add pre-commit and iesopt dependencies
     # subprocess.run(["uv", "tool", "install", "pre-commit", "--with", "pre-commit-uv"])
-    subprocess.run(["uv", "tool", "install", "pre-commit"])
+    subprocess.run(["uv", "pip", "install", "pre-commit"])
     subprocess.run(["uv", "run", "pre-commit", "install"])
     subprocess.run(["uv", "run", "python", "-c", "import iesopt"])
     subprocess.run(["git", "add", "."])
